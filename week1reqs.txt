@@ -1,0 +1,33 @@
+triangle of resources
+
+money
+time issue strictly limited
+other... workers e.g.
+
+interactive data visualization to be embedded on website (html)
+
+produce 2-3 examples of what can be done + just as important, documentation and instructions
+
+
+week 1
+read handbook + watch video (email university)
+study quarto, how to create a document in quarto with embedded ipynb
++ look at interacvtivity section ( https://quarto.org/docs/interactive/ )
+jupyter widgets 
+
+decide output + how to produce + plan whos doing what
+----------------------------------------------------
+given a set of data to plot an interactive chart using that data, and be able to interact with that data in various ways (filter, view) we decide on suitable source of data + plt ( do we decide ? )
+
+be able to plot a function with different parameters, interact with that in various ways
+
+combine the two ^ but a function over the top of some data (fitting a function to some data, show data and function fitted to it)
+
+
+
+
+
+
+
+
+
