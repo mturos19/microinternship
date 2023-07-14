@@ -43,4 +43,28 @@ fig = px.choropleth(df_map, locations="Country Name",
 fig.show()
 
 
+import plotly.graph_objects as go
+
+def plot_gdp_interactive(countries):
+    filtered_df = df[df['Country Name'].isin(countries)]
+    fig = go.Figure()
+
+    for country in filtered_df['Country Name'].unique():
+        country_df = filtered_df[filtered_df['Country Name'] == country]
+        fig.add_trace(go.Scatter(
+            x=country_df['Year'],
+            y=country_df['Value'],
+            mode='lines',
+            name=country
+        ))
+
+    fig.update_layout(
+        xaxis=dict(title='Year'),
+        yaxis=dict(title='GDP'),
+        title='GDP Comparison',
+        showlegend=True
+    )
+    fig.show()
+plot_gdp_interactive(countries_list)
+
 ```
