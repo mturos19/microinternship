@@ -11,6 +11,14 @@ jupyter: python3
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
+from scipy.stats import linregress
+import seaborn  as sns 
+import statistics
+import scipy
+from scipy import stats
+import matplotlib.pyplot as plt
+
+
 df = pd.read_csv('gdp_csv.csv')
 
 
@@ -63,13 +71,40 @@ def barchart_interactive(countries):
         data_frame = filtered_df,
         x='Country Name',
         y='Value',
-        color='Year',  # Use GDP values for color coding
-        color_continuous_scale="Viridis",  # Choose a color scale (you can change this to any other valid scale)
+        color='Year',  
+        color_continuous_scale="Viridis",  
         labels={"x": "Countries", "y": "GDP"},
-        title="GDP of Five Countries",  # Show GDP values on the bars
+        title="GDP of the 4 Countries",
         )
         
     fig.show()
 barchart_interactive(countries_list)
 
+
+from sklearn import preprocessing, svm
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+
+def linear_reg_uk(df):
+    uk = df[df['Country Name']=='United Kingdom']
+    x = np.array(uk['Year']).reshape(-1, 1)
+    y = np.array(uk['Value']).reshape(-1, 1)
+
+    sns.lmplot(x ="Year", y ="Value", data = uk, order = 2, ci = None)
+    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size = 0.70)
+
+    regr = LinearRegression()
+    
+    regr.fit(x_train, y_train)
+
+
+    # Data scatter of predicted values
+    y_pred = regr.predict(x_test)
+    plt.scatter(x_test, y_test, color ='b')
+    plt.plot(x_test, y_pred, color ='k')
+    plt.title("Linear Regression of UK's GDP")
+
+    plt.show()
+
+linear_reg_uk(df)
 ```
