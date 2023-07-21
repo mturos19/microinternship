@@ -1,4 +1,3 @@
-#%%
 import numpy as np
 from bokeh.io import curdoc
 from bokeh.layouts import column, row
@@ -36,7 +35,6 @@ amp.js_on_change('value', callback)
 freq.js_on_change('value', callback)
 phase.js_on_change('value', callback)
 offset.js_on_change('value', callback)
-output_notebook()
 show(row(plot, column(amp, freq, phase, offset)))
 
 from bokeh.layouts import gridplot
@@ -62,7 +60,6 @@ p_filtered = figure(height=300, width=300, tools=tools)
 p_filtered.circle(x="x", y="y", size=10, hover_color="red", source=source, view=view)
 
 # show both plots next to each other in a gridplot layout
-output_notebook()
 show(gridplot([[p, p_filtered]]))
 
 
