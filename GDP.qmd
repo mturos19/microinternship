@@ -7,9 +7,17 @@ bibliography: references.bib
 jupyter: python3
 ---
 
-In this project, we will create visualizations to compare the GDP (Gross Domestic Product) of different countries over time. We will use Python and several libraries like pandas, matplotlib, and Plotly to achieve this.
 
-We will achieve so using Quarto Documents, so that it adds interactivity and ease of access to exporting the document to different formats.
+
+In this document, we will go through the process of creating captivating and educational interactive visualisations using Quarto's .qmd format in Visual Studio code. 
+
+This document will help equip you with the knowledge and tools to produce engaging interactive plots using various python libraries. 
+
+## What is Quarto?
+Quarto is an open-source scientific and technical publishing system, that allows you to create interactive documents seamlessly.
+
+With Quarto, you combine the simplicity of Markdown with the versatility of code execution, enabling you to integrate text and code efortlessly. 
+
 
 ## Getting Started
 
