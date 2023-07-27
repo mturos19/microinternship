@@ -1,0 +1,418 @@
+---
+title: "GDP Comparison Visualization Project"
+format:
+    html:
+        code-fold: true
+bibliography: references.bib
+jupyter: python3
+---
+
+In this project, we will create visualizations to compare the GDP (Gross Domestic Product) of different countries over time. We will use Python and several libraries like pandas, matplotlib, and Plotly to achieve this.
+
+We will achieve so using Quarto Documents, so that it adds interactivity and ease of access to exporting the document to different formats.
+
+## Getting Started
+
+Follow the steps below to get started with the GDP Comparison Visualization Project:
+
+### 1. Install Python: 
+Ensure you have Python (version 3.x) installed on your system. If you don't have it, you can download and install Python from the official website: [Install Python](https://www.python.org/downloads/)
+
+### 2. Install Quarto:
+Quarto is the tool we will use to create and render the document. 
+Quarto extension is also recommended to be installed if using Visual Studio Code.
+
+Install Quarto using the following command:
+
+###### Pip (Mac/Linux)
+```bash
+python3 -m pip install jupyter
+```
+
+###### Pip (Windows)
+```bash
+py -m pip install jupyter
+```
+
+###### Conda
+```bash
+conda install jupyter
+```
+
+### 3. Create Quarto Project:
+Create a new folder for your project and navigate to it in the terminal. Initialize a new Quarto document by running the following command:
+```bash
+quarto init gdp_comparison_project
+cd gdp_comparison_project
+```
+
+### 4. Prepare Data:
+Download the GDP data from a reliable source in CSV format. The dataset used for this document is available [here](https://www.kaggle.com/datasets/tunguz/country-regional-and-world-gdp?resource=download). The dataset should have columns: "Country Name", "Country Code", "Year", and "Value". Place the downloaded CSV file in the same folder as your `index.qmd` file.
+
+### 5. Data Loading and Visualization:
+Copy the Python code provided in the example implementation section below into your `index.qmd` file. This code performs data loading, data visualization using choropleth map, interactive line plot, interactive bar chart, and linear regression analysis on the UK's GDP.
+
+### 6. Render the Document:
+Use the following command to render the Quarto document to an HTML file:
+```bash
+quarto render --to html index.qmd
+```
+Or you can alternatively preview [Real-time visualizes all the changes in source code as long as the preview command is running in the terminal] the document live by running the following command:
+```bash
+quarto preview "GDP.qmd"
+```
+
+### 7. Explore the Document:
+Open the generated `index.html` file in your web browser to explore the GDP comparison visualizations and the linear regression analysis.
+
+
+## Example implementation
+In this section, we will showcase and explain the implementation of four distinct, interactive graph visualizations using various tools and libraries offered for the Python programming language and the rendering of these graphs using Quarto.
+
+The code below is the entire program that contains the importing of said libraries (i.e. [numpy](https://numpy.org/), [pandas](https://pandas.pydata.org/), [matplotlib](https://matplotlib.org/), [plotly](https://plotly.com/python/), [seaborn](https://seaborn.pydata.org/), [scipy](https://scipy.org/)) and the 4 main functions that are used to generate the graphs themselves.
+```{python}
+import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
+from scipy.stats import linregress
+import seaborn  as sns 
+import statistics
+import scipy
+from scipy import stats
+import matplotlib.pyplot as plt
+
+
+df = pd.read_csv('gdp_csv.csv')
+
+
+countries_list=['United Kingdom', 'Italy', 'France', 'Germany']
+
+
+import plotly.express as px
+
+df_map=df 
+def map_gdp():
+    fig = px.choropleth(df_map, locations="Country Name",
+                        color="Value", 
+                        locationmode='country names',
+                        color_continuous_scale=px.colors.sequential.Plasma,
+                        animation_frame="Year",
+                        title="GDP Map",
+                        range_color=(0, 3.5E12))
+    fig.show()
+
+
+
+import plotly.graph_objects as go
+
+def plot_gdp_interactive(countries):
+    filtered_df = df[df['Country Name'].isin(countries)]
+    fig = go.Figure()
+
+    for country in filtered_df['Country Name'].unique():
+        country_df = filtered_df[filtered_df['Country Name'] == country]
+        fig.add_trace(go.Scatter(
+            x=country_df['Year'],
+            y=country_df['Value'],
+            mode='lines',
+            name=country
+        ))
+
+    fig.update_layout(
+        xaxis=dict(title='Year'),
+        yaxis=dict(title='GDP'),
+        title='GDP Comparison',
+        showlegend=True
+    )
+    fig.show()
+
+
+def barchart_interactive(countries):
+    filtered_df = df[df['Country Name'].isin(countries)]
+    for country in filtered_df['Country Name'].unique():
+        fig = px.bar(
+        data_frame = filtered_df,
+        x='Country Name',
+        y='Value',
+        color='Year',  
+        color_continuous_scale="Viridis",  
+        labels={"x": "Countries", "y": "GDP"},
+        title="GDP of the 4 Countries",
+        )
+        
+    fig.show()
+
+
+
+from sklearn import preprocessing, svm
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+
+def linear_reg_uk(df):
+    uk = df[df['Country Name']=='United Kingdom']
+    x = np.array(uk['Year']).reshape(-1, 1)
+    y = np.array(uk['Value']).reshape(-1, 1)
+
+    sns.lmplot(x ="Year", y ="Value", data = uk, order = 2, ci = None)
+    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size = 0.70)
+
+    regr = LinearRegression()
+    
+    regr.fit(x_train, y_train)
+
+
+    # Data scatter of predicted values
+    y_pred = regr.predict(x_test)
+    plt.scatter(x_test, y_test, color ='b')
+    plt.plot(x_test, y_pred, color ='k')
+    plt.title("Linear Regression of UK's GDP")
+
+    plt.show()
+
+
+```
+
+### 1. Map plot of global GDP
+The plot below is a representation of global GDP over time. It has an interactive slider where the user can select the specific year and notice a visual change in each country's GDP. The user can also hover over each country specifically and obtain a multitude of information such as name, gdp value, year. 
+
+The function map_gdp() creates an animated choropleth map using the Plotly Express library. Key parameters include:
+
+* locations: Specifies the geographical locations to be used for the map. 
+* color: Sets the color scale according to the values from the specified column.
+* color_continuous_scale: Defines the color scheme used. It's set to px.colors.sequential.Plasma.
+* animation_frame: Sets the column in the DataFrame to be used for animation. Here, it's the "Year" column.
+* title: Defines the title of the map. Here, it's set as "GDP Map".
+* range_color: Sets the range of the color scale. It's set from 0 to 3.5 trillion (3.5E12) here.
+
+This function expects the input data to be in a specific format. The data should be in a pandas DataFrame (df_map), which must include columns labeled "Country Name", "Value", and "Year".
+
+To adapt this function for your needs, modify these parameters to suit your data and visualization goals. For example, you can change the title to match the data you're visualizing, or adjust range_color to fit the range of your data values. Make sure your DataFrame is correctly formatted with the necessary columns. Pandas functions like read_csv(), read_excel(), or data manipulation methods like merge(), groupby(), and pivot_table() can be very useful in preparing your DataFrame.
+
+```{python}
+map_gdp()
+```
+
+### 2. Line chart of GDP for specific countries
+The plot below is a representation of the GDP of the United Kingdom, Germany, Italy and France over time. Visualized as a color coded line chart that can be interactively used.
+
+The function plot_gdp_interactive(countries) creates an interactive line chart that visualizes GDP data for a given set of countries over time. The function uses the Plotly Graph Objects library (imported as go). It accepts a list of countries as an argument. Key aspects include:
+
+* filtered_df: A DataFrame that only includes rows where the 'Country Name' is in the provided list of countries. This filtering is done using the isin() function from pandas.
+* go.Figure(): Creates an empty figure to which traces (individual plots) will be added.
+* for loop iterates over each unique country in the filtered DataFrame. For each country, a new line plot (go.Scatter) is added to the figure, representing the GDP values ('Value') over time ('Year').
+* fig.update_layout(): Updates the layout properties of the figure, setting labels for the x and y axes, defining a title, and ensuring the legend is visible.
+
+
+To adapt this function, you can modify the countries list parameter, adjust the 'Year' and 'GDP' labels, and change the title of the plot in the update_layout() function. Make sure your DataFrame df is correctly formatted with necessary columns ('Country Name', 'Year', 'Value').
+
+```{python}
+plot_gdp_interactive(countries_list)
+```
+
+### 3. Bar chart of GDP for specific countries
+
+The below graph is very similar in functionality to the line chart above. However as it is a bar chart it offers the user a wider range of visualizations that can be used to explore the data.
+
+The function barchart_interactive(countries) creates an interactive bar chart that visualizes GDP data for a specified set of countries. It uses the Plotly Express library (px). The function takes a list of countries as an argument. Key elements include:
+
+* The function takes a list of countries and filters the DataFrame df accordingly using the isin() method.
+* It iterates through each unique country in filtered_df, but the chart generation doesn't depend on this loop, which seems unnecessary.
+* The bar chart is created using px.bar(). It assigns 'Country Name' to the x-axis and 'Value' (GDP) to the y-axis. The 'Year' column defines the color of the bars.
+* The color_continuous_scale parameter is set to "Viridis", providing a color gradient to represent years.
+* The x and y axes are labeled as "Countries" and "GDP" respectively using the labels parameter.
+* The chart's title is set as "GDP of the 4 Countries".
+
+```{python}
+barchart_interactive(countries_list)
+```
+
+### 4. Linear regression model of UK's GDP
+
+So far we've presented ways to visualize and showcase the data. However we can also effectively created a linear regressional model of the data, in this case of the UK's GDP, and then plot it in the form of a graph as shown below.
+Here are the key components and potential benefits:
+
+* Linear regression is used to predict the 'Value' (GDP) based on the 'Year'. This model could provide insights into GDP trends and make future GDP projections.
+* The data is split into training and testing sets (30% training, 70% testing) using train_test_split(). The ratio can be adjusted based on the data distribution and the need for model validation.
+The model is trained on the training set using regr.fit(x_train, y_train).
+* Predicted values for the test set are generated with regr.predict(x_test).
+* The function also visualizes actual vs. predicted values with a scatter plot, which can help in assessing model performance visually.
+```{python}
+linear_reg_uk(df)
+```
+
+
+## Further development
+In this project, we have exclusively demonstrated python coding to produce these visuals. However, Quarto gives you more options to coherently deliver interactivity such as:
+
+- Observable JavaScript (OJS) 
+- R
+- Julia 
+
+
+Key features of OJS include:
+
+- Cells: Code and data are organised into cells.
+- Reactive updates: when data changes, the affected parts of the notebook are automatically re-evaluated and updated. 
+- Observables: This provides a special data type called "Observable" that enables automatic updates whenever the data changes. 
+- D3.js: D3.js is a popular JavaScript library for data visualisation, and can be used along side OJS. 
+- Shareability: OJS can be easily shared and collaborated 
+
+Furthermore, Quarto also gives the option to add finishing touches like labeling, authoring and referencing to elevate the documents to a professional level.
+
+### 1. Observable JavaScript example
+
+```{ojs}
+data = FileAttachment("penguins.csv").csv({ typed: true })
+viewof bill_length_min = Inputs.range(
+  [32, 50], 
+  {value: 35, step: 1, label: "Bill length (min):"}
+)
+viewof islands = Inputs.checkbox(
+  ["Torgersen", "Biscoe", "Dream"], 
+  { value: ["Torgersen", "Biscoe"], 
+    label: "Islands:"
+  }
+)
+filtered = data.filter(function(penguin) {
+  return bill_length_min < penguin.bill_length_mm &&
+         islands.includes(penguin.island);
+})
+Plot.rectY(filtered, 
+  Plot.binX(
+    {y: "count"}, 
+    {x: "body_mass_g", fill: "species", thresholds: 20}
+  ))
+  .plot({
+    facet: {
+      data: filtered,
+      x: "sex",
+      y: "species",
+      marginRight: 80
+    },
+    marks: [
+      Plot.frame(),
+    ]
+  }
+)
+```
+
+### 2. Authoring and Referenceing 
+Clear authoring and proper referencing are essential for maintaining credibility and integrity. Quarto makes it simple to add equations, citations, bibliographies, and more to the documents, ensuring that the work is well-sourced and coherently presented. 
+
+### 3. Equations 
+```bash
+Heat equation:
+
+$u_t(x,t)=u_{xx}(x,t), 0<x<1, t>0$
+```
+When rendered, will look like:
+
+Heat equation:
+
+$u_t(x,t)=u_{xx}(x,t), 0<x<1, t>0$
+
+### 4. Citations 
+To properly cite other books and work within these documents, you can create a bibliography file in a supported format (BibTex or CSL). Then link the file to your document using YAML metadata option. 
+
+Example, 
+
+```bash
+---
+title: Quarto Basics
+format: html
+bibliography: references.bib
+jupyter: python3
+---
+
+The heat equation was developed my Joseph Fourier in 1822, see [@Heat18]
+
+#code 
+
+## References
+```
+Then when rendered, 
+
+
+The heat equation was developed my Joseph Fourier in 1822, see [@Heat18]
+
+### 5. Cross References 
+
+You can add cross-references in the documents to make it easier to navigate to figures, tables, equations and sections. Cross-references require lables, 
+
+
+
+See @fig-simple in @sec-plot for a demonstration of a simple plot.
+See @eq-MSE to better understand Mean square error.
+
+
+```bash
+## Overview
+
+See @fig-simple in @sec-plot for a demonstration of a simple plot. 
+
+See @eq-stddev to better understand standard deviation.
+
+## Plot {#sec-plot}
+
+{python}
+#| label: fig-simple
+#| fig-cap: "Simple Plot"
+import matplotlib.pyplot as plt
+plt.plot([1,2,3,5,9])
+plt.show()
+
+
+## Equation {#sec-equation}
+$$
+
+MSE = \frac{1}{n}\sum_{i=1}^n (y_i-\bar{y}_i)^2
+$$ {#eq-MSE}
+```
+## Plot {#sec-plot}
+```{python}
+#| label: fig-simple
+#| fig-cap: "Simple Plot"
+import matplotlib.pyplot as plt
+plt.plot([1,2,3,5,9])
+plt.show()
+```
+
+## Equation {#sec-equation}
+
+$$
+MSE = \frac{1}{n}\sum_{i=1}^n (y_i-\bar{y}_i)^2
+$$ {#eq-MSE}
+
+
+## Possible Roadblocks
+
+During the project, you might encounter some challenges. Here are a few possible roadblocks and ways to overcome them:
+
+### 1. Data Availability:
+Ensure you have access to reliable GDP data in CSV format for the desired countries and years. Look for trusted sources like World Bank or IMF datasets. If you can't find the specific data you need, consider using alternative datasets or adjusting the scope of the project.
+
+### 2. Library Compatibility:
+Check that all libraries and packages used in the provided code are compatible with the version of Python you are using. If necessary, update or install the latest versions of the libraries. You can use package managers like `pip` or `conda` to manage the library versions.
+
+### 3. Data Cleaning:
+If the GDP data contains missing values or outliers, handle them appropriately during data preprocessing. Consider imputing missing data or removing outliers to avoid issues in visualization and analysis.
+
+### 4. Resource Constraints:
+Depending on the size of the dataset and complexity of the visualizations, you may encounter resource constraints in terms of memory or computational power. Be mindful of your system's limitations and consider downsampling data if necessary.
+
+Remember, this is just a starting point, and you can further customize and expand the project according to your interests and requirements.
+For more information on Quarto, refer to the official documentation: [Quarto Documentation](https://quarto.org/docs).
+
+## Conclusion
+
+In conclusion, this documentation has introduced and explored the numerous benefits of using Quarto for rendering Python data science code into live HTML files. We've delved into the process of getting started with Quarto, walked through example implementations, examined future use cases, and also addressed potential roadblocks.
+
+Quarto's versatility in handling Python code, including data visualization and machine learning models, has been highlighted. It not only facilitates sharing and collaboration among data scientists, but also allows for an interactive, user-friendly experience for end-users, who can engage with the data and visualizations in real-time.
+
+Moreover, the ability to bring your data analysis and modeling to life in a live HTML document provides a profound advantage in presenting complex data in an accessible and intuitive manner. The examples we've covered demonstrate the potential of integrating data science workflows directly into Quarto, enabling comprehensive and dynamic data narratives.
+
+The potential roadblocks addressed should serve as a guide to common issues and provide solutions to help you navigate the process smoothly. As the field of data science continues to evolve, tools like Quarto will only become more invaluable, seamlessly bridging the gap between data analysis, visualization, and communication.
+
+By mastering Quarto and integrating it into your data science toolkit, you're not just improving your workflow—you're also taking part in shaping the future of data science communication. We hope this document serves as a valuable resource as you explore the vast potential of Quarto in your data science journey.
+
+## references
