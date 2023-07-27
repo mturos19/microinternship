@@ -3,6 +3,7 @@ title: "GDP Comparison Visualization Project"
 format:
     html:
         code-fold: true
+bibliography: references.bib
 jupyter: python3
 ---
 
@@ -239,6 +240,150 @@ The model is trained on the training set using regr.fit(x_train, y_train).
 linear_reg_uk(df)
 ```
 
+
+## Further development
+In this project, we have exclusively demonstrated python coding to produce these visuals. However, Quarto gives you more options to coherently deliver interactivity such as:
+
+- Observable JavaScript (OJS) 
+- R
+- Julia 
+
+
+Key features of OJS include:
+
+- Cells: Code and data are organised into cells.
+- Reactive updates: when data changes, the affected parts of the notebook are automatically re-evaluated and updated. 
+- Observables: This provides a special data type called "Observable" that enables automatic updates whenever the data changes. 
+- D3.js: D3.js is a popular JavaScript library for data visualisation, and can be used along side OJS. 
+- Shareability: OJS can be easily shared and collaborated 
+
+Furthermore, Quarto also gives the option to add finishing touches like labeling, authoring and referencing to elevate the documents to a professional level.
+
+### 1. Observable JavaScript example
+
+```{ojs}
+data = FileAttachment("penguins.csv").csv({ typed: true })
+viewof bill_length_min = Inputs.range(
+  [32, 50], 
+  {value: 35, step: 1, label: "Bill length (min):"}
+)
+viewof islands = Inputs.checkbox(
+  ["Torgersen", "Biscoe", "Dream"], 
+  { value: ["Torgersen", "Biscoe"], 
+    label: "Islands:"
+  }
+)
+filtered = data.filter(function(penguin) {
+  return bill_length_min < penguin.bill_length_mm &&
+         islands.includes(penguin.island);
+})
+Plot.rectY(filtered, 
+  Plot.binX(
+    {y: "count"}, 
+    {x: "body_mass_g", fill: "species", thresholds: 20}
+  ))
+  .plot({
+    facet: {
+      data: filtered,
+      x: "sex",
+      y: "species",
+      marginRight: 80
+    },
+    marks: [
+      Plot.frame(),
+    ]
+  }
+)
+```
+
+### 2. Authoring and Referenceing 
+Clear authoring and proper referencing are essential for maintaining credibility and integrity. Quarto makes it simple to add equations, citations, bibliographies, and more to the documents, ensuring that the work is well-sourced and coherently presented. 
+
+### 3. Equations 
+```bash
+Heat equation:
+
+$u_t(x,t)=u_{xx}(x,t), 0<x<1, t>0$
+```
+When rendered, will look like:
+
+Heat equation:
+
+$u_t(x,t)=u_{xx}(x,t), 0<x<1, t>0$
+
+### 4. Citations 
+To properly cite other books and work within these documents, you can create a bibliography file in a supported format (BibTex or CSL). Then link the file to your document using YAML metadata option. 
+
+Example, 
+
+```bash
+---
+title: Quarto Basics
+format: html
+bibliography: references.bib
+jupyter: python3
+---
+
+The heat equation was developed my Joseph Fourier in 1822, see [@Heat18]
+
+#code 
+
+## References
+```
+Then when rendered, 
+
+
+The heat equation was developed my Joseph Fourier in 1822, see [@Heat18]
+
+### 5. Cross References 
+
+You can add cross-references in the documents to make it easier to navigate to figures, tables, equations and sections. Cross-references require lables, 
+
+
+
+See @fig-simple in @sec-plot for a demonstration of a simple plot.
+See @eq-MSE to better understand Mean square error.
+
+
+```bash
+## Overview
+
+See @fig-simple in @sec-plot for a demonstration of a simple plot. 
+
+See @eq-stddev to better understand standard deviation.
+
+## Plot {#sec-plot}
+
+{python}
+#| label: fig-simple
+#| fig-cap: "Simple Plot"
+import matplotlib.pyplot as plt
+plt.plot([1,2,3,5,9])
+plt.show()
+
+
+## Equation {#sec-equation}
+$$
+
+MSE = \frac{1}{n}\sum_{i=1}^n (y_i-\bar{y}_i)^2
+$$ {#eq-MSE}
+```
+## Plot {#sec-plot}
+```{python}
+#| label: fig-simple
+#| fig-cap: "Simple Plot"
+import matplotlib.pyplot as plt
+plt.plot([1,2,3,5,9])
+plt.show()
+```
+
+## Equation {#sec-equation}
+
+$$
+MSE = \frac{1}{n}\sum_{i=1}^n (y_i-\bar{y}_i)^2
+$$ {#eq-MSE}
+
+
 ## Possible Roadblocks
 
 During the project, you might encounter some challenges. Here are a few possible roadblocks and ways to overcome them:
@@ -269,3 +414,5 @@ Moreover, the ability to bring your data analysis and modeling to life in a live
 The potential roadblocks addressed should serve as a guide to common issues and provide solutions to help you navigate the process smoothly. As the field of data science continues to evolve, tools like Quarto will only become more invaluable, seamlessly bridging the gap between data analysis, visualization, and communication.
 
 By mastering Quarto and integrating it into your data science toolkit, you're not just improving your workflow—you're also taking part in shaping the future of data science communication. We hope this document serves as a valuable resource as you explore the vast potential of Quarto in your data science journey.
+
+## references
