@@ -264,40 +264,7 @@ Furthermore, Quarto also gives the option to add finishing touches like labeling
 
 ### 1. Observable JavaScript example
 
-```{javascript}
-data = FileAttachment("penguins.csv").csv({typed: true})
-viewof bill_length_min = Inputs.range(
-  [32, 50], 
-  {value: 35, step: 1, label: "Bill length (min):"}
-)
-viewof islands = Inputs.checkbox(
-  ["Torgersen", "Biscoe", "Dream"], 
-  { value: ["Torgersen", "Biscoe"], 
-    label: "Islands:"
-  }
-)
-filtered = data.filter(function(penguin) {
-  return bill_length_min < penguin.bill_length_mm &&
-         islands.includes(penguin.island);
-})
-Plot.rectY(filtered, 
-  Plot.binX(
-    {y: "count"}, 
-    {x: "body_mass_g", fill: "species", thresholds: 20}
-  ))
-  .plot({
-    facet: {
-      data: filtered,
-      x: "sex",
-      y: "species",
-      marginRight: 80
-    },
-    marks: [
-      Plot.frame(),
-    ]
-  }
-)
-```
+![ObservableJS Example](ojsexample.png)
 
 ### 2. Authoring and Referenceing 
 Clear authoring and proper referencing are essential for maintaining credibility and integrity. Quarto makes it simple to add equations, citations, bibliographies, and more to the documents, ensuring that the work is well-sourced and coherently presented. 
