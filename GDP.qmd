@@ -3,6 +3,7 @@ title: "GDP Comparison Visualization Project"
 format:
     html:
         code-fold: true
+bibliography: references.bib
 jupyter: python3
 ---
 
@@ -382,3 +383,5 @@ Moreover, the ability to bring your data analysis and modeling to life in a live
 The potential roadblocks addressed should serve as a guide to common issues and provide solutions to help you navigate the process smoothly. As the field of data science continues to evolve, tools like Quarto will only become more invaluable, seamlessly bridging the gap between data analysis, visualization, and communication.
 
 By mastering Quarto and integrating it into your data science toolkit, you're not just improving your workflow—you're also taking part in shaping the future of data science communication. We hope this document serves as a valuable resource as you explore the vast potential of Quarto in your data science journey.
+
+## references
