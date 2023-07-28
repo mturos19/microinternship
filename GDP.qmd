@@ -78,7 +78,28 @@ Open the generated `index.html` file in your web browser to explore the GDP comp
 In this section, we will showcase and explain the implementation of four distinct, interactive graph visualizations using various tools and libraries offered for the Python programming language and the rendering of these graphs using Quarto.
 
 The code below is the entire program that contains the importing of said libraries (i.e. [numpy](https://numpy.org/), [pandas](https://pandas.pydata.org/), [matplotlib](https://matplotlib.org/), [plotly](https://plotly.com/python/), [seaborn](https://seaborn.pydata.org/), [scipy](https://scipy.org/)) and the 4 main functions that are used to generate the graphs themselves.
+
+
+
+### 1. Map plot of global GDP
+The plot below is a representation of global GDP over time. It has an interactive slider where the user can select the specific year and notice a visual change in each country's GDP. The user can also hover over each country specifically and obtain a multitude of information such as name, gdp value, year. 
+
+The function map_gdp() creates an animated choropleth map using the Plotly Express library. Key parameters include:
+
+* locations: Specifies the geographical locations to be used for the map. 
+* color: Sets the color scale according to the values from the specified column.
+* color_continuous_scale: Defines the color scheme used. It's set to px.colors.sequential.Plasma.
+* animation_frame: Sets the column in the DataFrame to be used for animation. Here, it's the "Year" column.
+* title: Defines the title of the map. Here, it's set as "GDP Map".
+* range_color: Sets the range of the color scale. It's set from 0 to 3.5 trillion (3.5E12) here.
+
+This function expects the input data to be in a specific format. The data should be in a pandas DataFrame (df_map), which must include columns labeled "Country Name", "Value", and "Year".
+
+To adapt this function for your needs, modify these parameters to suit your data and visualization goals. For example, you can change the title to match the data you're visualizing, or adjust range_color to fit the range of your data values. Make sure your DataFrame is correctly formatted with the necessary columns. Pandas functions like read_csv(), read_excel(), or data manipulation methods like merge(), groupby(), and pivot_table() can be very useful in preparing your DataFrame.
+
 ```{python}
+
+
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
@@ -111,6 +132,43 @@ def map_gdp():
 
 
 
+
+map_gdp()
+```
+
+### 2. Line chart of GDP for specific countries
+The plot below is a representation of the GDP of the United Kingdom, Germany, Italy and France over time. Visualized as a color coded line chart that can be interactively used.
+
+The function plot_gdp_interactive(countries) creates an interactive line chart that visualizes GDP data for a given set of countries over time. The function uses the Plotly Graph Objects library (imported as go). It accepts a list of countries as an argument. Key aspects include:
+
+* filtered_df: A DataFrame that only includes rows where the 'Country Name' is in the provided list of countries. This filtering is done using the isin() function from pandas.
+* go.Figure(): Creates an empty figure to which traces (individual plots) will be added.
+* for loop iterates over each unique country in the filtered DataFrame. For each country, a new line plot (go.Scatter) is added to the figure, representing the GDP values ('Value') over time ('Year').
+* fig.update_layout(): Updates the layout properties of the figure, setting labels for the x and y axes, defining a title, and ensuring the legend is visible.
+
+
+To adapt this function, you can modify the countries list parameter, adjust the 'Year' and 'GDP' labels, and change the title of the plot in the update_layout() function. Make sure your DataFrame df is correctly formatted with necessary columns ('Country Name', 'Year', 'Value').
+
+```{python}
+import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
+from scipy.stats import linregress
+import seaborn  as sns 
+import statistics
+import scipy
+from scipy import stats
+import matplotlib.pyplot as plt
+
+
+df = pd.read_csv('gdp_csv.csv')
+
+
+countries_list=['United Kingdom', 'Italy', 'France', 'Germany']
+
+
+import plotly.express as px
+
 import plotly.graph_objects as go
 
 def plot_gdp_interactive(countries):
@@ -134,6 +192,42 @@ def plot_gdp_interactive(countries):
     )
     fig.show()
 
+plot_gdp_interactive(countries_list)
+```
+
+### 3. Bar chart of GDP for specific countries
+
+The below graph is very similar in functionality to the line chart above. However as it is a bar chart it offers the user a wider range of visualizations that can be used to explore the data.
+
+The function barchart_interactive(countries) creates an interactive bar chart that visualizes GDP data for a specified set of countries. It uses the Plotly Express library (px). The function takes a list of countries as an argument. Key elements include:
+
+* The function takes a list of countries and filters the DataFrame df accordingly using the isin() method.
+* It iterates through each unique country in filtered_df, but the chart generation doesn't depend on this loop, which seems unnecessary.
+* The bar chart is created using px.bar(). It assigns 'Country Name' to the x-axis and 'Value' (GDP) to the y-axis. The 'Year' column defines the color of the bars.
+* The color_continuous_scale parameter is set to "Viridis", providing a color gradient to represent years.
+* The x and y axes are labeled as "Countries" and "GDP" respectively using the labels parameter.
+* The chart's title is set as "GDP of the 4 Countries".
+
+```{python}
+
+import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
+from scipy.stats import linregress
+import seaborn  as sns 
+import statistics
+import scipy
+from scipy import stats
+import matplotlib.pyplot as plt
+
+
+df = pd.read_csv('gdp_csv.csv')
+
+
+countries_list=['United Kingdom', 'Italy', 'France', 'Germany']
+
+
+import plotly.express as px
 
 def barchart_interactive(countries):
     filtered_df = df[df['Country Name'].isin(countries)]
@@ -151,6 +245,21 @@ def barchart_interactive(countries):
     fig.show()
 
 
+
+barchart_interactive(countries_list)
+```
+
+### 4. Linear regression model of UK's GDP
+
+So far we've presented ways to visualize and showcase the data. However we can also effectively created a linear regressional model of the data, in this case of the UK's GDP, and then plot it in the form of a graph as shown below.
+Here are the key components and potential benefits:
+
+* Linear regression is used to predict the 'Value' (GDP) based on the 'Year'. This model could provide insights into GDP trends and make future GDP projections.
+* The data is split into training and testing sets (30% training, 70% testing) using train_test_split(). The ratio can be adjusted based on the data distribution and the need for model validation.
+The model is trained on the training set using regr.fit(x_train, y_train).
+* Predicted values for the test set are generated with regr.predict(x_test).
+* The function also visualizes actual vs. predicted values with a scatter plot, which can help in assessing model performance visually.
+```{python}
 
 from sklearn import preprocessing, svm
 from sklearn.model_selection import train_test_split
@@ -178,73 +287,6 @@ def linear_reg_uk(df):
     plt.show()
 
 
-```
-
-### 1. Map plot of global GDP
-The plot below is a representation of global GDP over time. It has an interactive slider where the user can select the specific year and notice a visual change in each country's GDP. The user can also hover over each country specifically and obtain a multitude of information such as name, gdp value, year. 
-
-The function map_gdp() creates an animated choropleth map using the Plotly Express library. Key parameters include:
-
-* locations: Specifies the geographical locations to be used for the map. 
-* color: Sets the color scale according to the values from the specified column.
-* color_continuous_scale: Defines the color scheme used. It's set to px.colors.sequential.Plasma.
-* animation_frame: Sets the column in the DataFrame to be used for animation. Here, it's the "Year" column.
-* title: Defines the title of the map. Here, it's set as "GDP Map".
-* range_color: Sets the range of the color scale. It's set from 0 to 3.5 trillion (3.5E12) here.
-
-This function expects the input data to be in a specific format. The data should be in a pandas DataFrame (df_map), which must include columns labeled "Country Name", "Value", and "Year".
-
-To adapt this function for your needs, modify these parameters to suit your data and visualization goals. For example, you can change the title to match the data you're visualizing, or adjust range_color to fit the range of your data values. Make sure your DataFrame is correctly formatted with the necessary columns. Pandas functions like read_csv(), read_excel(), or data manipulation methods like merge(), groupby(), and pivot_table() can be very useful in preparing your DataFrame.
-
-```{python}
-map_gdp()
-```
-
-### 2. Line chart of GDP for specific countries
-The plot below is a representation of the GDP of the United Kingdom, Germany, Italy and France over time. Visualized as a color coded line chart that can be interactively used.
-
-The function plot_gdp_interactive(countries) creates an interactive line chart that visualizes GDP data for a given set of countries over time. The function uses the Plotly Graph Objects library (imported as go). It accepts a list of countries as an argument. Key aspects include:
-
-* filtered_df: A DataFrame that only includes rows where the 'Country Name' is in the provided list of countries. This filtering is done using the isin() function from pandas.
-* go.Figure(): Creates an empty figure to which traces (individual plots) will be added.
-* for loop iterates over each unique country in the filtered DataFrame. For each country, a new line plot (go.Scatter) is added to the figure, representing the GDP values ('Value') over time ('Year').
-* fig.update_layout(): Updates the layout properties of the figure, setting labels for the x and y axes, defining a title, and ensuring the legend is visible.
-
-
-To adapt this function, you can modify the countries list parameter, adjust the 'Year' and 'GDP' labels, and change the title of the plot in the update_layout() function. Make sure your DataFrame df is correctly formatted with necessary columns ('Country Name', 'Year', 'Value').
-
-```{python}
-plot_gdp_interactive(countries_list)
-```
-
-### 3. Bar chart of GDP for specific countries
-
-The below graph is very similar in functionality to the line chart above. However as it is a bar chart it offers the user a wider range of visualizations that can be used to explore the data.
-
-The function barchart_interactive(countries) creates an interactive bar chart that visualizes GDP data for a specified set of countries. It uses the Plotly Express library (px). The function takes a list of countries as an argument. Key elements include:
-
-* The function takes a list of countries and filters the DataFrame df accordingly using the isin() method.
-* It iterates through each unique country in filtered_df, but the chart generation doesn't depend on this loop, which seems unnecessary.
-* The bar chart is created using px.bar(). It assigns 'Country Name' to the x-axis and 'Value' (GDP) to the y-axis. The 'Year' column defines the color of the bars.
-* The color_continuous_scale parameter is set to "Viridis", providing a color gradient to represent years.
-* The x and y axes are labeled as "Countries" and "GDP" respectively using the labels parameter.
-* The chart's title is set as "GDP of the 4 Countries".
-
-```{python}
-barchart_interactive(countries_list)
-```
-
-### 4. Linear regression model of UK's GDP
-
-So far we've presented ways to visualize and showcase the data. However we can also effectively created a linear regressional model of the data, in this case of the UK's GDP, and then plot it in the form of a graph as shown below.
-Here are the key components and potential benefits:
-
-* Linear regression is used to predict the 'Value' (GDP) based on the 'Year'. This model could provide insights into GDP trends and make future GDP projections.
-* The data is split into training and testing sets (30% training, 70% testing) using train_test_split(). The ratio can be adjusted based on the data distribution and the need for model validation.
-The model is trained on the training set using regr.fit(x_train, y_train).
-* Predicted values for the test set are generated with regr.predict(x_test).
-* The function also visualizes actual vs. predicted values with a scatter plot, which can help in assessing model performance visually.
-```{python}
 linear_reg_uk(df)
 ```
 
